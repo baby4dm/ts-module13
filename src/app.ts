@@ -99,19 +99,21 @@ class ProjectInput {
   private validate(validInput: Validatable) {
     let isValid = true;
     if (validInput.required) {
-      isValid && validInput.value.toString().trim().length > 0;
+      isValid = isValid && validInput.value.toString().trim().length > 0;
     }
     if (validInput.minLength != null && typeof validInput.value === "string") {
-      isValid && validInput.value.trim().length > validInput.minLength;
+      isValid =
+        isValid && validInput.value.trim().length > validInput.minLength;
     }
     if (validInput.maxLength != null && typeof validInput.value === "string") {
-      isValid && validInput.value.trim().length < validInput.maxLength;
+      isValid =
+        isValid && validInput.value.trim().length < validInput.maxLength;
     }
     if (validInput.min != null && typeof validInput.value === "number") {
-      validInput && validInput.value > validInput.min;
+      isValid = validInput && validInput.value > validInput.min;
     }
     if (validInput.max != null && typeof validInput.value === "number") {
-      validInput && validInput.value < validInput.max;
+      isValid = validInput && validInput.value < validInput.max;
     }
 
     return isValid;
