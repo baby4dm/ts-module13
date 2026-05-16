@@ -37,14 +37,14 @@ class ProjectInput {
     this.element = importedNode.firstElementChild as HTMLFormElement;
     this.element.id = "user-input";
 
-    this.inputTitleElement = document.getElementById(
-      "title",
+    this.inputTitleElement = this.element.querySelector(
+      "#title",
     ) as HTMLInputElement;
-    this.inputDescriptionElement = document.getElementById(
-      "description",
+    this.inputDescriptionElement = this.element.querySelector(
+      "#description",
     ) as HTMLInputElement;
-    this.inputPeopleElement = document.getElementById(
-      "people",
+    this.inputPeopleElement = this.element.querySelector(
+      "#people",
     ) as HTMLInputElement;
 
     this.configure();
@@ -59,7 +59,9 @@ class ProjectInput {
   private submitHandler(e: Event) {
     e.preventDefault();
     const userInput = this.gatherInput();
-    console.log(userInput);
+    if (Array.isArray(userInput)) {
+      console.log(userInput);
+    }
   }
 
   private gatherInput(): [string, string, number] | void {
@@ -79,7 +81,7 @@ class ProjectInput {
     };
 
     const validPeople: Validatable = {
-      value: people,
+      value: +people,
       required: true,
       min: 1,
       max: 5,
@@ -103,17 +105,17 @@ class ProjectInput {
     }
     if (validInput.minLength != null && typeof validInput.value === "string") {
       isValid =
-        isValid && validInput.value.trim().length > validInput.minLength;
+        isValid && validInput.value.trim().length >= validInput.minLength;
     }
     if (validInput.maxLength != null && typeof validInput.value === "string") {
       isValid =
-        isValid && validInput.value.trim().length < validInput.maxLength;
+        isValid && validInput.value.trim().length <= validInput.maxLength;
     }
     if (validInput.min != null && typeof validInput.value === "number") {
-      isValid = validInput && validInput.value > validInput.min;
+      isValid = isValid && validInput.value >= validInput.min;
     }
     if (validInput.max != null && typeof validInput.value === "number") {
-      isValid = validInput && validInput.value < validInput.max;
+      isValid = isValid && validInput.value <= validInput.max;
     }
 
     return isValid;
@@ -123,4 +125,38 @@ class ProjectInput {
   }
 }
 
+class ProjectList {
+  templateElement: HTMLTemplateElement;
+  hostElement: HTMLDivElement;
+  element: HTMLElement;
+
+  constructor(private type: "active" | "finished") {
+    this.templateElement = document.getElementById(
+      "project-list",
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById("app")! as HTMLDivElement;
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true,
+    );
+    this.element = importedNode.firstElementChild as HTMLElement;
+    this.element.id = `${type}-projects`;
+
+    this.renderContent();
+    this.attach();
+  }
+
+  private renderContent() {
+    this.element.querySelector("ul")!.id = `${this.type}-projects-list`;
+    this.element.querySelector("h2")!.textContent =
+      `${this.type.toUpperCase()} PROJECTS`;
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement("beforeend", this.element);
+  }
+}
+
 const projectInput = new ProjectInput();
+const activePrjList = new ProjectList("active");
+const finishedPrjList = new ProjectList("finished");

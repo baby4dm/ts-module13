@@ -22,9 +22,9 @@ class ProjectInput {
         const importedNode = document.importNode(this.templateElement.content, true);
         this.element = importedNode.firstElementChild;
         this.element.id = "user-input";
-        this.inputTitleElement = document.getElementById("title");
-        this.inputDescriptionElement = document.getElementById("description");
-        this.inputPeopleElement = document.getElementById("people");
+        this.inputTitleElement = this.element.querySelector("#title");
+        this.inputDescriptionElement = this.element.querySelector("#description");
+        this.inputPeopleElement = this.element.querySelector("#people");
         this.configure();
         this.attach();
     }
@@ -34,7 +34,9 @@ class ProjectInput {
     submitHandler(e) {
         e.preventDefault();
         const userInput = this.gatherInput();
-        console.log(userInput);
+        if (Array.isArray(userInput)) {
+            console.log(userInput);
+        }
     }
     gatherInput() {
         const title = this.inputTitleElement.value;
@@ -50,7 +52,7 @@ class ProjectInput {
             minLength: 5,
         };
         const validPeople = {
-            value: people,
+            value: +people,
             required: true,
             min: 1,
             max: 5,
@@ -70,17 +72,17 @@ class ProjectInput {
         }
         if (validInput.minLength != null && typeof validInput.value === "string") {
             isValid =
-                isValid && validInput.value.trim().length > validInput.minLength;
+                isValid && validInput.value.trim().length >= validInput.minLength;
         }
         if (validInput.maxLength != null && typeof validInput.value === "string") {
             isValid =
-                isValid && validInput.value.trim().length < validInput.maxLength;
+                isValid && validInput.value.trim().length <= validInput.maxLength;
         }
         if (validInput.min != null && typeof validInput.value === "number") {
-            isValid = validInput && validInput.value > validInput.min;
+            isValid = isValid && validInput.value >= validInput.min;
         }
         if (validInput.max != null && typeof validInput.value === "number") {
-            isValid = validInput && validInput.value < validInput.max;
+            isValid = isValid && validInput.value <= validInput.max;
         }
         return isValid;
     }
@@ -91,5 +93,27 @@ class ProjectInput {
 __decorate([
     autobind
 ], ProjectInput.prototype, "submitHandler", null);
+class ProjectList {
+    constructor(type) {
+        this.type = type;
+        this.templateElement = document.getElementById("project-list");
+        this.hostElement = document.getElementById("app");
+        const importedNode = document.importNode(this.templateElement.content, true);
+        this.element = importedNode.firstElementChild;
+        this.element.id = `${type}-projects`;
+        this.renderContent();
+        this.attach();
+    }
+    renderContent() {
+        this.element.querySelector("ul").id = `${this.type}-projects-list`;
+        this.element.querySelector("h2").textContent =
+            `${this.type.toUpperCase()} PROJECTS`;
+    }
+    attach() {
+        this.hostElement.insertAdjacentElement("beforeend", this.element);
+    }
+}
 const projectInput = new ProjectInput();
+const activePrjList = new ProjectList("active");
+const finishedPrjList = new ProjectList("finished");
 //# sourceMappingURL=app.js.map
