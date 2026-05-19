@@ -23,6 +23,8 @@ enum ProjectStatus {
   Finished,
 }
 
+type Listener<T> = (items: T[]) => void;
+
 class Project {
   constructor(
     public id: string,
@@ -32,6 +34,44 @@ class Project {
     public status: ProjectStatus,
   ) {}
 }
+class State<T> {
+  protected listeners: Listener<T>[] = [];
+  addListener(listener: Listener<T>) {
+    this.listeners.push(listener);
+  }
+}
+
+class ProjectState extends State<Project> {
+  private projects: Project[] = [];
+  private static instance: ProjectState;
+
+  private constructor() {
+    super();
+  }
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance;
+    }
+    this.instance = new ProjectState();
+    return this.instance;
+  }
+
+  addProject(title: string, description: string, numOfPeople: number) {
+    const project = new Project(
+      Math.random().toString().slice(1),
+      title,
+      description,
+      numOfPeople,
+      ProjectStatus.Active,
+    );
+    this.projects.push(project);
+    for (const lstnr of this.listeners) {
+      lstnr(this.projects);
+    }
+  }
+}
+
 class ProjectInput {
   templateElement: HTMLTemplateElement;
   hostElement: HTMLDivElement;
@@ -51,7 +91,6 @@ class ProjectInput {
     );
     this.element = importedNode.firstElementChild as HTMLFormElement;
     this.element.id = "user-input";
-
     this.inputTitleElement = this.element.querySelector(
       "#title",
     ) as HTMLInputElement;
