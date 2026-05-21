@@ -1,0 +1,1 @@
+{"version":3,"file":"base-state.js","sourceRoot":"","sources":["../../src/state/base-state.ts"],"names":[],"mappings":"AAEA,MAAM,OAAO,KAAK;IAAlB;QACY,cAAS,GAAkB,EAAE,CAAC;IAI1C,CAAC;IAHC,WAAW,CAAC,QAAqB;QAC/B,IAAI,CAAC,SAAS,CAAC,IAAI,CAAC,QAAQ,CAAC,CAAC;IAChC,CAAC;CACF"}
